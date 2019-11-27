@@ -7,20 +7,22 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.room.Room
+import com.example.multiplicationtablequiz.db.AppDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
 import java.util.ArrayList
 import java.util.Random
 
 class MainActivity : AppCompatActivity() {
-    internal var currentExpectedAnswer = 0
-    private var currentQuestionIntegers: Array<Int> = arrayOf(1,1)
-    internal var score: Int = 0
-    internal var maxValue = 12
-    internal var minValue = 1
-    internal var numbersToCalc: ArrayList<Array<Int>> = ArrayList()
-    internal var wrongAnswers: ArrayList<Array<Int>> = ArrayList()
-    internal var rand: Random = Random(System.nanoTime())
+    private var currentExpectedAnswer = 0
+    private var currentQuestionIntegers: Array<Int> = arrayOf(1, 1)
+    private var score: Int = 0
+    private var maxValue = 12
+    private var minValue = 1
+    private var numbersToCalc: ArrayList<Array<Int>> = ArrayList()
+    private var wrongAnswers: ArrayList<Array<Int>> = ArrayList()
+    private var rand: Random = Random(System.nanoTime())
 
     private val nextValue: Int
         get() = rand.nextInt(maxValue - minValue + 1) + minValue
