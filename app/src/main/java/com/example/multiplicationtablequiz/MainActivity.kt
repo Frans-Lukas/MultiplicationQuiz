@@ -53,17 +53,18 @@ class MainActivity : AppCompatActivity() {
                     if (numbersToCalc.size == 0) {
                         resetGame()
                     } else {
+                        //correct answer
                         if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
                             score++
                             setScoreText()
                             updateQuestion()
                             setQuestionsLeftText()
+                            //getDBInstance().findByProducts(currentExpectedAnswer, )
                         } else {
                             showCorrectAnswer()
                             updateQuestion()
                             setQuestionsLeftText()
                             wrongAnswers.add(currentQuestionIntegers)
-
                         }
                     }
                 }
@@ -74,6 +75,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun getDBInstance() = AppDatabase.getInstance(applicationContext).multiplicationPairDao()
 
     private fun setupNumberPickers() {
         minPicker.minValue = 1
