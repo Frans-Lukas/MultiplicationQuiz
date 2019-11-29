@@ -9,7 +9,7 @@ interface MultiplicationPairDao {
     fun getAll(): List<MultiplicationPair>
 
     @Query ("SELECT * FROM multiplicationpair WHERE firstProduct=:first AND secondProduct=:second")
-    fun findByProducts(first: Int, second: Int): MultiplicationPair
+    fun findByProducts(first: Int, second: Int): List<MultiplicationPair>
 
     @Insert
     fun insertAll(vararg multiplicationPairs: MultiplicationPair)

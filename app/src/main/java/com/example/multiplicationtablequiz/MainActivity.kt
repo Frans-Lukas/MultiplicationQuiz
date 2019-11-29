@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.room.Room
 import com.example.multiplicationtablequiz.db.AppDatabase
+import com.example.multiplicationtablequiz.db.MultiplicationPair
 import kotlinx.android.synthetic.main.activity_main.*
 
 import java.util.ArrayList
@@ -59,7 +60,17 @@ class MainActivity : AppCompatActivity() {
                             setScoreText()
                             updateQuestion()
                             setQuestionsLeftText()
-                            //getDBInstance().findByProducts(currentExpectedAnswer, )
+
+                            getMultiplicationPair()
+                            val pair: IntArray = getMultiplicationPair()
+                            val matchingPairs = getDBInstance().findByProducts(pair[0], pair[1])
+                            val prod1 = matchingPairs.get(0).numCorrect
+                            val prod2 = matchingPairs.get(1).numCorrect
+                            if(matchingPairs.size == 1 && prod1 != null){
+                                val pairToUpdateTo = MultiplicationPair(matchingPairs.get(0).uid, pair[0], pair[1], prod1
+                                + 1, prod2)
+                                getDBInstance().updateMultiplicationPair(pairToUpdateTo)
+                            }
                         } else {
                             showCorrectAnswer()
                             updateQuestion()
@@ -74,6 +85,11 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun getMultiplicationPair() : IntArray {
+        val splitString = TVnumberCorrect.text.toString().split(" ")
+        return intArrayOf(splitString.get(0).toInt(), splitString.get(2).toInt())
     }
 
     private fun getDBInstance() = AppDatabase.getInstance(applicationContext).multiplicationPairDao()
