@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import androidx.room.Room
 import com.example.multiplicationtablequiz.db.AppDatabase
 import com.example.multiplicationtablequiz.db.MultiplicationPair
 import kotlinx.android.synthetic.main.activity_main.*
@@ -35,10 +34,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         addNewNumbers()
-        setupNumberPickers()
         setScoreText()
-        updateQuestion()
-        setQuestionsLeftText()
+        changeQuestion()
         setTextInputListener()
     }
 
@@ -57,24 +54,13 @@ class MainActivity : AppCompatActivity() {
                         //correct answer
                         if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
                             score++
+                            updateQuestionInDB(true)
                             setScoreText()
-                            updateQuestion()
-                            setQuestionsLeftText()
-
-                            getMultiplicationPair()
-                            val pair: IntArray = getMultiplicationPair()
-                            val matchingPairs = getDBInstance().findByProducts(pair[0], pair[1])
-                            val prod1 = matchingPairs.get(0).numCorrect
-                            val prod2 = matchingPairs.get(1).numCorrect
-                            if(matchingPairs.size == 1 && prod1 != null){
-                                val pairToUpdateTo = MultiplicationPair(matchingPairs.get(0).uid, pair[0], pair[1], prod1
-                                + 1, prod2)
-                                getDBInstance().updateMultiplicationPair(pairToUpdateTo)
-                            }
+                            changeQuestion()
                         } else {
+                            updateQuestionInDB(false)
                             showCorrectAnswer()
-                            updateQuestion()
-                            setQuestionsLeftText()
+                            changeQuestion()
                             wrongAnswers.add(currentQuestionIntegers)
                         }
                     }
@@ -87,55 +73,35 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun changeQuestion() {
+        updateQuestion()
+        setQuestionsLeftText()
+    }
+
+    private fun updateQuestionInDB(correct: Boolean) {
+        fun Boolean.toInt() = if (this) 1 else 0
+        val pair: IntArray = getMultiplicationPair()
+        val matchingPairs = getDBInstance().findByProducts(pair[0], pair[1])
+        val numCorrectBefore = matchingPairs.get(0).numCorrect
+        val numWrongBefore = matchingPairs.get(0).numWrong
+        var numCorrect = 0
+        var numWrong = 0
+        if (matchingPairs.size == 1) {
+            if(numWrongBefore != null && numCorrectBefore != null){
+                numCorrect = numCorrectBefore + correct.toInt()
+                numWrong = numWrongBefore + correct.toInt()
+            }
+            val pairToUpdateTo = MultiplicationPair(matchingPairs.get(0).uid, pair[0], pair[1], numCorrect, numWrong)
+            getDBInstance().updateMultiplicationPair(pairToUpdateTo)
+        }
+    }
+
     private fun getMultiplicationPair() : IntArray {
         val splitString = TVnumberCorrect.text.toString().split(" ")
         return intArrayOf(splitString.get(0).toInt(), splitString.get(2).toInt())
     }
 
     private fun getDBInstance() = AppDatabase.getInstance(applicationContext).multiplicationPairDao()
-
-    private fun setupNumberPickers() {
-        minPicker.minValue = 1
-        minPicker.maxValue = 99
-        minPicker.wrapSelectorWheel = true
-        try {
-            Thread.sleep(100)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-
-        minPicker.value = 1
-        minPicker.setOnValueChangedListener { numberPicker, oldVal, newVal ->
-            minValue = newVal
-            if (minValue >= maxValue) {
-                minValue = maxValue - 1
-                minPicker.value = minValue
-            }
-            wrongAnswers.clear()
-        }
-
-
-        maxPicker.minValue = 1
-        maxPicker.maxValue = 99
-        maxPicker.wrapSelectorWheel = true
-        try {
-            Thread.sleep(100)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-
-        maxPicker.value = 12
-        maxPicker.setOnValueChangedListener { numberPicker, oldVal, newVal ->
-            maxValue = newVal
-            if (maxValue <= minValue) {
-                maxValue = minValue + 1
-                maxPicker.value = maxValue
-            }
-            wrongAnswers.clear()
-        }
-
-
-    }
 
     private fun showCorrectAnswer() {
         val num = Integer.toString(currentExpectedAnswer)
@@ -168,12 +134,15 @@ class MainActivity : AppCompatActivity() {
         val questionText: String
         val divOrMult = rand.nextInt(3)
         if (divOrMult == 0) {
+            // 1x5=?
             questionText = currentQuestionIntegers[0].toString() + "x" + currentQuestionIntegers[1] + " = ?"
             currentExpectedAnswer = currentQuestionIntegers[0] * currentQuestionIntegers[1]
         } else if (divOrMult == 1) {
+            // 1x?=5
             questionText = currentQuestionIntegers[0].toString() + "x? = " + currentQuestionIntegers[0] * currentQuestionIntegers[1]
             currentExpectedAnswer = currentQuestionIntegers[1]
         } else {
+            // 5/1=?
             questionText = (currentQuestionIntegers[0] * currentQuestionIntegers[1]).toString() + "/" + currentQuestionIntegers[0] + " = ?"
             currentExpectedAnswer = currentQuestionIntegers[1]
         }
@@ -187,7 +156,6 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
         setScoreText()
         setQuestionsLeftText()
-
     }
 
     private fun alertOfFinished() {
