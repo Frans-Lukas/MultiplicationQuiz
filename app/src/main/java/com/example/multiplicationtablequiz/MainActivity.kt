@@ -1,5 +1,6 @@
 package com.example.multiplicationtablequiz
 
+import android.content.Intent
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
@@ -170,5 +171,10 @@ class MainActivity : AppCompatActivity() {
     companion object {
 
         val NUMBER_OF_QUESTIONS = 10
+    }
+
+    fun gotoStatsActivity(view: View) {
+        val statsIntent = Intent(this, StatsActivity::class.java)
+        startActivity(statsIntent)
     }
 }
