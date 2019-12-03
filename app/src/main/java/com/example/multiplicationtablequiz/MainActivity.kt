@@ -55,11 +55,12 @@ class MainActivity : AppCompatActivity() {
                         //correct answer
                         if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
                             score++
-                            updateQuestionInDB(true)
+                            //updateQuestionInDB(true)
+
                             setScoreText()
                             changeQuestion()
                         } else {
-                            updateQuestionInDB(false)
+                            //updateQuestionInDB(false)
                             showCorrectAnswer()
                             changeQuestion()
                             wrongAnswers.add(currentQuestionIntegers)
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         setQuestionsLeftText()
     }
 
-    private fun updateQuestionInDB(correct: Boolean) {
+    suspend fun updateQuestionInDB(correct: Boolean) {
         fun Boolean.toInt() = if (this) 1 else 0
         val pair: IntArray = getMultiplicationPair()
         val matchingPairs = getDBInstance().findByProducts(pair[0], pair[1])

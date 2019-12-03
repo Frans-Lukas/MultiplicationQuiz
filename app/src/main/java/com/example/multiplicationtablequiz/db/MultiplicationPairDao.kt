@@ -1,23 +1,27 @@
 package com.example.multiplicationtablequiz.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface MultiplicationPairDao {
 
     @Query ("SELECT * FROM multiplicationpair")
-    fun getAll(): List<MultiplicationPair>
+    fun getAll(): LiveData<List<MultiplicationPair>>
 
     @Query ("SELECT * FROM multiplicationpair WHERE firstProduct=:first AND secondProduct=:second")
-    fun findByProducts(first: Int, second: Int): List<MultiplicationPair>
+    fun findByProducts(first: Int, second: Int): LiveData<List<MultiplicationPair>>
 
-    @Insert
-    fun insertAll(vararg multiplicationPairs: MultiplicationPair)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(vararg multiplicationPairs: MultiplicationPair)
 
     @Update
-    fun updateMultiplicationPair(pair: MultiplicationPair)
+    suspend fun updateMultiplicationPair(pair: MultiplicationPair)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(multiplicationPair: MultiplicationPair)
 
     @Delete
-    fun delete(multiplicationPair: MultiplicationPair)
+    suspend fun delete(multiplicationPair: MultiplicationPair)
 
 }
