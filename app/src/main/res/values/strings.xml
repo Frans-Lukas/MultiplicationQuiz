@@ -7,4 +7,6 @@
     <string name="resetGameText">Reset Game</string>
     <string name="select_numbers">Select Numbers</string>
     <string name="stats">Stats</string>
+    <string name="_20x20">20x20</string>
+    <string name="_50">50%</string>
 </resources>

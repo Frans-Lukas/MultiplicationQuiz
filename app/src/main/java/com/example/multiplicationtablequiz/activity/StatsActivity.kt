@@ -11,7 +11,7 @@ import com.example.multiplicationtablequiz.QuestionViewModel
 import com.example.multiplicationtablequiz.R
 import com.example.multiplicationtablequiz.StatsAdapter
 
-class StatsActivity : AppCompatActivity(){
+class StatsActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: StatsAdapter
     private lateinit var questionViewModel: QuestionViewModel
@@ -24,7 +24,7 @@ class StatsActivity : AppCompatActivity(){
         recyclerView.adapter = viewAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
         questionViewModel = ViewModelProvider(this).get(QuestionViewModel::class.java)
-        questionViewModel.allMultPairs.observe(this, Observer { pairs -> pairs?.let{ viewAdapter.setPairs(it)} })
+        questionViewModel.allMultPairs.observe(this, Observer { pairs -> pairs?.let { viewAdapter.setPairs(it) } })
 
     }
 

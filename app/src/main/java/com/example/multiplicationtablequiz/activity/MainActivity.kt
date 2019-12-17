@@ -165,10 +165,6 @@ class MainActivity : AppCompatActivity() {
         AlertDialog.Builder(this).setTitle(scoreString).setMessage("").show()
     }
 
-    fun resetGame(view: View) {
-        resetGame()
-    }
-
     companion object {
 
         val NUMBER_OF_QUESTIONS = 10

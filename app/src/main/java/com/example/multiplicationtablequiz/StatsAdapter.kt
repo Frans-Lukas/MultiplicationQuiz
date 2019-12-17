@@ -9,24 +9,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.multiplicationtablequiz.db.MultiplicationPair
 
 class StatsAdapter internal constructor(context: Context) :
-        RecyclerView.Adapter<StatsAdapter.PairViewHolder>() {
+        RecyclerView.Adapter<StatsViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var pairs = emptyList<MultiplicationPair>()
 
-    inner class PairViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val pairItemView: TextView = itemView.findViewById(R.id.textView)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatsViewHolder {
+        return StatsViewHolder(inflater, parent)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairViewHolder {
-        val itemView = inflater.inflate(R.layout.recyclerview_item, parent, false)
-        return PairViewHolder(itemView)
-    }
-
-    override fun onBindViewHolder(holder: PairViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: StatsViewHolder, position: Int) {
         val current = pairs[position]
-        val pair = current.firstProduct.toString() + "x" + current.secondProduct.toString()
-        holder.pairItemView.text = pair
+        holder.bind(current)
     }
 
     internal fun setPairs(pairs: List<MultiplicationPair>){

@@ -40,13 +40,13 @@ abstract class MultiplicationPairDatabase : RoomDatabase(){
         }
 
         suspend fun populateDatabase(multPairDao: MultiplicationPairDao){
-            multPairDao.deleteAll()
+            //multPairDao.deleteAll()
 
-            var pair = MultiplicationPair(1, 15, 10, 50, 1000)
+            var pair = MultiplicationPair( 15, 10, 50, 1000)
             multPairDao.insert(pair)
 
-            pair = MultiplicationPair(2, 20, 10, 100, 1000)
-            multPairDao.insert(pair)
+            val pair2 = MultiplicationPair( 20, 10, 100, 1000)
+            multPairDao.insert(pair2)
         }
     }
 }
