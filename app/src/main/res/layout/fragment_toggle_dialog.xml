@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center"
+    >
+
+    <Button
+        android:id="@+id/buttonToggleAll"
+        android:layout_margin="@dimen/marginToggleButtonDialog"
+        android:onClick="toggleAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Toggle all" />
+
+    <Button
+        android:id="@+id/buttonUpToTen"
+        android:layout_margin="@dimen/marginToggleButtonDialog"
+        android:onClick="toggleUpToTen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Up to ten" />
+
+    <Button
+        android:id="@+id/buttonPrimeNumbers"
+        android:layout_margin="@dimen/marginToggleButtonDialog"
+        android:onClick="enablePrimes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Prime numbers" />
+
+    <Button
+        android:id="@+id/buttonEvenNumbers"
+        android:layout_margin="@dimen/marginToggleButtonDialog"
+        android:onClick="toggleEvenNumbers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Even Numbers" />
+
+
+    <Button
+        android:id="@+id/buttonOddNumbers"
+        android:layout_margin="@dimen/marginToggleButtonDialog"
+        android:onClick="toggleOddNumbers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Odd Numbers" />
+</LinearLayout>

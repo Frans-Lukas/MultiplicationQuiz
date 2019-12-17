@@ -1,6 +1,9 @@
 package com.example.multiplicationtablequiz.activity
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
@@ -11,7 +14,6 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.example.multiplicationtablequiz.QuestionViewModel
 import com.example.multiplicationtablequiz.R
-import com.example.multiplicationtablequiz.db.MultiplicationPairDatabase
 import com.example.multiplicationtablequiz.db.MultiplicationPair
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -28,10 +30,15 @@ class MainActivity : AppCompatActivity() {
     private var wrongAnswers: ArrayList<Array<Int>> = ArrayList()
     private var rand: Random = Random(System.nanoTime())
 
-    private lateinit var questionViewModel: QuestionViewModel
+    private val activeNumbers:BooleanArray = BooleanArray(100)
+    private lateinit var prefs : SharedPreferences
 
-    private val nextValue: Int
-        get() = rand.nextInt(maxValue - minValue + 1) + minValue
+    companion object {
+        val NUMBER_OF_QUESTIONS = 10
+        val SELECT_ACTIVE_NUMBERS: Int = 1337
+    }
+
+    private lateinit var questionViewModel: QuestionViewModel
 
     private val scoreString: String
         get() = "score: $score/$NUMBER_OF_QUESTIONS"
@@ -40,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         questionViewModel = ViewModelProvider(this).get(QuestionViewModel::class.java)
+        prefs = this.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        loadActiveNumbers()
         addNewNumbers()
         setScoreText()
         changeQuestion()
@@ -87,22 +96,24 @@ class MainActivity : AppCompatActivity() {
 
     fun updateQuestionInDB(correct: Boolean) {
         fun Boolean.toInt() = if (this) 1 else 0
-        val pair: IntArray = getMultiplicationPair()
-        val matchingPairs : List<MultiplicationPair>? = questionViewModel.findByPair(pair[0], pair[1]).value
+        val matchingPairs : List<MultiplicationPair>? = questionViewModel.findByPair(currentQuestionIntegers[0], currentQuestionIntegers[1]).value
         if (matchingPairs != null && matchingPairs.size == 1) {
             val numCorrect = matchingPairs.get(0).numCorrect + correct.toInt()
-            val numWrong = matchingPairs.get(0).numWrong + correct.toInt()
+            var numWrong = matchingPairs.get(0).numWrong
+            if (!correct){
+                numWrong++
+            }
             val pairToUpdateTo = matchingPairs.get(0).copy(numCorrect = numCorrect, numWrong = numWrong)
             questionViewModel.update(pairToUpdateTo)
         } else{
-            questionViewModel.insert(MultiplicationPair(pair[0], pair[1], correct.toInt(), correct.toInt()))
+            var numWrong = 0
+            if(!correct){
+                numWrong = 1
+            }
+            questionViewModel.insert(MultiplicationPair(currentQuestionIntegers[0], currentQuestionIntegers[1], correct.toInt(), numWrong))
         }
     }
 
-    private fun getMultiplicationPair() : IntArray {
-        val splitString = TVnumberCorrect.text.toString().split(" ")
-        return intArrayOf(splitString.get(0).toInt(), splitString.get(2).toInt())
-    }
 
 
     private fun showCorrectAnswer() {
@@ -123,18 +134,31 @@ class MainActivity : AppCompatActivity() {
     private fun addNewNumbers() {
         val numberOfNewQuestions = NUMBER_OF_QUESTIONS - wrongAnswers.size
         numbersToCalc.clear()
+        val potentialNumbers = arrayListOf<Int>()
+        for (i in 0 until 100){
+            if (activeNumbers[i]){
+                potentialNumbers.add(i + 1)
+            }
+        }
+        if(potentialNumbers.isEmpty()){
+            potentialNumbers.add(1)
+        }
         for (i in 0 until numberOfNewQuestions) {
-            numbersToCalc.add(arrayOf(nextValue, nextValue))
+            numbersToCalc.add(arrayOf(randomizeNextProduct(potentialNumbers), randomizeNextProduct(potentialNumbers)))
         }
         numbersToCalc.addAll(wrongAnswers)
         wrongAnswers.clear()
+    }
+
+    private fun randomizeNextProduct(potentialNumbers: ArrayList<Int>): Int {
+        return potentialNumbers[(0 until potentialNumbers.size).random()]
     }
 
     private fun updateQuestion() {
         ETInput.setText("")
         currentQuestionIntegers = numbersToCalc.removeAt(0)
         val questionText: String
-        val divOrMult = rand.nextInt(3)
+        val divOrMult = rand.nextInt(4)
         if (divOrMult == 0) {
             // 1x5=?
             questionText = currentQuestionIntegers[0].toString() + "x" + currentQuestionIntegers[1] + " = ?"
@@ -143,12 +167,21 @@ class MainActivity : AppCompatActivity() {
             // 1x?=5
             questionText = currentQuestionIntegers[0].toString() + "x? = " + currentQuestionIntegers[0] * currentQuestionIntegers[1]
             currentExpectedAnswer = currentQuestionIntegers[1]
-        } else {
+        } else if(divOrMult == 2){
             // 5/1=?
             questionText = (currentQuestionIntegers[0] * currentQuestionIntegers[1]).toString() + "/" + currentQuestionIntegers[0] + " = ?"
             currentExpectedAnswer = currentQuestionIntegers[1]
+        } else{
+            // 5/?=5
+            questionText = (currentQuestionIntegers[0] * currentQuestionIntegers[1]).toString() + "/?" + " = " + (currentQuestionIntegers[1]).toString()
         }
         TVnumberQuestion.text = questionText
+    }
+
+
+    //to allow the button to call this function
+    fun resetGame(view: View) {
+        resetGame()
     }
 
     private fun resetGame() {
@@ -165,13 +198,28 @@ class MainActivity : AppCompatActivity() {
         AlertDialog.Builder(this).setTitle(scoreString).setMessage("").show()
     }
 
-    companion object {
-
-        val NUMBER_OF_QUESTIONS = 10
-    }
-
     fun gotoStatsActivity(view: View) {
         val statsIntent = Intent(this, StatsActivity::class.java)
         startActivity(statsIntent)
+    }
+
+    fun gotoNumberSelectorActivity(view: View) {
+        val numberSelectIntent = Intent(this, NumberSelectActivity::class.java)
+        startActivityForResult(numberSelectIntent, SELECT_ACTIVE_NUMBERS)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == SELECT_ACTIVE_NUMBERS){
+            if(resultCode == Activity.RESULT_OK){
+                loadActiveNumbers()
+                resetGame()
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+    fun loadActiveNumbers(){
+        for(i in activeNumbers.indices){
+            activeNumbers[i] = prefs.getBoolean(getString(R.string.activeNumbersKey) + "_" + i, true)
+        }
     }
 }
