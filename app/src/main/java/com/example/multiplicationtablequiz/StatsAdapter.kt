@@ -1,24 +1,38 @@
 package com.example.multiplicationtablequiz
 
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import org.w3c.dom.Text
+import com.example.multiplicationtablequiz.db.MultiplicationPair
 
-class StatsAdapter(private val myDataset: Array<String>) :
-        RecyclerView.Adapter<StatsAdapter.MyViewHolder>() {
-    class MyViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
+class StatsAdapter internal constructor(context: Context) :
+        RecyclerView.Adapter<StatsAdapter.PairViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val textView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.text_view_stats, parent, false) as TextView
-        return MyViewHolder(textView)
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
+    private var pairs = emptyList<MultiplicationPair>()
+
+    inner class PairViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val pairItemView: TextView = itemView.findViewById(R.id.textView)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.textView.text = myDataset[position]
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairViewHolder {
+        val itemView = inflater.inflate(R.layout.recyclerview_item, parent, false)
+        return PairViewHolder(itemView)
     }
 
-    override fun getItemCount() = myDataset.size
+    override fun onBindViewHolder(holder: PairViewHolder, position: Int) {
+        val current = pairs[position]
+        val pair = current.firstProduct.toString() + "x" + current.secondProduct.toString()
+        holder.pairItemView.text = pair
+    }
+
+    internal fun setPairs(pairs: List<MultiplicationPair>){
+        this.pairs = pairs
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount() = pairs.size
 }

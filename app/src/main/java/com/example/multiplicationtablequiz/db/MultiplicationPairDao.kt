@@ -24,4 +24,7 @@ interface MultiplicationPairDao {
     @Delete
     suspend fun delete(multiplicationPair: MultiplicationPair)
 
+    @Query("DELETE FROM multiplicationpair")
+    suspend fun deleteAll()
+
 }

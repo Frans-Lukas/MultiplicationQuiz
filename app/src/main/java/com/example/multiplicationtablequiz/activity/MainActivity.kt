@@ -1,4 +1,4 @@
-package com.example.multiplicationtablequiz
+package com.example.multiplicationtablequiz.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AlertDialog
@@ -8,7 +8,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import com.example.multiplicationtablequiz.db.AppDatabase
+import androidx.lifecycle.ViewModelProvider
+import com.example.multiplicationtablequiz.QuestionViewModel
+import com.example.multiplicationtablequiz.R
+import com.example.multiplicationtablequiz.db.MultiplicationPairDatabase
 import com.example.multiplicationtablequiz.db.MultiplicationPair
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -25,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private var wrongAnswers: ArrayList<Array<Int>> = ArrayList()
     private var rand: Random = Random(System.nanoTime())
 
+    private lateinit var questionViewModel: QuestionViewModel
+
     private val nextValue: Int
         get() = rand.nextInt(maxValue - minValue + 1) + minValue
 
@@ -34,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        questionViewModel = ViewModelProvider(this).get(QuestionViewModel::class.java)
         addNewNumbers()
         setScoreText()
         changeQuestion()
@@ -55,12 +61,11 @@ class MainActivity : AppCompatActivity() {
                         //correct answer
                         if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
                             score++
-                            //updateQuestionInDB(true)
-
+                            updateQuestionInDB(true)
                             setScoreText()
                             changeQuestion()
                         } else {
-                            //updateQuestionInDB(false)
+                            updateQuestionInDB(false)
                             showCorrectAnswer()
                             changeQuestion()
                             wrongAnswers.add(currentQuestionIntegers)
@@ -80,21 +85,17 @@ class MainActivity : AppCompatActivity() {
         setQuestionsLeftText()
     }
 
-    suspend fun updateQuestionInDB(correct: Boolean) {
+    fun updateQuestionInDB(correct: Boolean) {
         fun Boolean.toInt() = if (this) 1 else 0
         val pair: IntArray = getMultiplicationPair()
-        val matchingPairs = getDBInstance().findByProducts(pair[0], pair[1])
-        val numCorrectBefore = matchingPairs.get(0).numCorrect
-        val numWrongBefore = matchingPairs.get(0).numWrong
-        var numCorrect = 0
-        var numWrong = 0
-        if (matchingPairs.size == 1) {
-            if(numWrongBefore != null && numCorrectBefore != null){
-                numCorrect = numCorrectBefore + correct.toInt()
-                numWrong = numWrongBefore + correct.toInt()
-            }
+        val matchingPairs : List<MultiplicationPair>? = questionViewModel.findByPair(pair[0], pair[1]).value
+        if (matchingPairs != null && matchingPairs.size == 1) {
+            val numCorrect = matchingPairs.get(0).numCorrect + correct.toInt()
+            val numWrong = matchingPairs.get(0).numWrong + correct.toInt()
             val pairToUpdateTo = MultiplicationPair(matchingPairs.get(0).uid, pair[0], pair[1], numCorrect, numWrong)
-            getDBInstance().updateMultiplicationPair(pairToUpdateTo)
+            questionViewModel.update(pairToUpdateTo)
+        } else{
+            questionViewModel.insert(MultiplicationPair(pair[0], pair[1], correct.toInt(), correct.toInt()))
         }
     }
 
@@ -103,7 +104,6 @@ class MainActivity : AppCompatActivity() {
         return intArrayOf(splitString.get(0).toInt(), splitString.get(2).toInt())
     }
 
-    private fun getDBInstance() = AppDatabase.getInstance(applicationContext).multiplicationPairDao()
 
     private fun showCorrectAnswer() {
         val num = Integer.toString(currentExpectedAnswer)

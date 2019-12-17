@@ -1,4 +1,4 @@
-package com.example.multiplicationtablequiz
+package com.example.multiplicationtablequiz.db
 
 import androidx.lifecycle.LiveData
 import com.example.multiplicationtablequiz.db.MultiplicationPair
@@ -9,5 +9,13 @@ class MultiplicationPairRepository (private val multPairDao: MultiplicationPairD
 
     suspend fun insert(multPair: MultiplicationPair){
         multPairDao.insert(multPair)
+    }
+
+    suspend fun update(multPair: MultiplicationPair){
+        multPairDao.updateMultiplicationPair(multPair)
+    }
+
+    suspend fun findByMultPair(prod1 : Int, prod2 : Int) : LiveData<List<MultiplicationPair>>{
+        return multPairDao.findByProducts(prod1, prod2)
     }
 }
