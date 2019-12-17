@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         if (matchingPairs != null && matchingPairs.size == 1) {
             val numCorrect = matchingPairs.get(0).numCorrect + correct.toInt()
             val numWrong = matchingPairs.get(0).numWrong + correct.toInt()
-            val pairToUpdateTo = MultiplicationPair(matchingPairs.get(0).uid, pair[0], pair[1], numCorrect, numWrong)
+            val pairToUpdateTo = matchingPairs.get(0).copy(numCorrect = numCorrect, numWrong = numWrong)
             questionViewModel.update(pairToUpdateTo)
         } else{
             questionViewModel.insert(MultiplicationPair(pair[0], pair[1], correct.toInt(), correct.toInt()))
