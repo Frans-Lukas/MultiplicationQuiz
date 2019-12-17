@@ -47,4 +47,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Odd Numbers" />
+
+
+    <Button
+        android:id="@+id/difficultNumbers"
+        android:layout_margin="@dimen/marginToggleButtonDialog"
+        android:onClick="toggleDifficultNumbers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="difficult numbers" />
 </LinearLayout>

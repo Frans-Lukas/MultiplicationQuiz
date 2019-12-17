@@ -15,7 +15,9 @@ class ToggleSettingsFragment : DialogFragment() {
 
             val builder = AlertDialog.Builder(it)
             val inflater = requireActivity().layoutInflater
-            builder.setView(inflater.inflate(R.layout.fragment_toggle_dialog, null)).create()
+            builder.
+                    setView(inflater.inflate(R.layout.fragment_toggle_dialog, null)).
+                    setNegativeButton(R.string.cancel) { dialog, id -> dialog.cancel() }.create()
         } ?: throw IllegalStateException("Activity cannot be null")
 
     }

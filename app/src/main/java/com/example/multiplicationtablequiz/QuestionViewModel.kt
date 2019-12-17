@@ -28,7 +28,6 @@ class QuestionViewModel(application: Application) : AndroidViewModel(application
     fun findByPair(prod1:Int, prod2:Int) : LiveData<List<MultiplicationPair>> =
             runBlocking { repository.findByMultPair(prod1, prod2) }
 
-
     fun update(multPair: MultiplicationPair) =
         ioScope.launch{ repository.update(multPair) }
 
