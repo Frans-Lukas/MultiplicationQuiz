@@ -63,7 +63,7 @@
 
     <Button
         android:id="@+id/resetGame"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -78,7 +78,7 @@
 
     <Button
         android:id="@+id/selectNumbersBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:text="@string/select_numbers"
         android:onClick="gotoNumberSelectorActivity"
@@ -88,7 +88,7 @@
 
     <Button
         android:id="@+id/statsBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:text="@string/stats"
         android:onClick="gotoStatsActivity"

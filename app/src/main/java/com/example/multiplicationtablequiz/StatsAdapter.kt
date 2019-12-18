@@ -1,6 +1,7 @@
 package com.example.multiplicationtablequiz
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,9 @@ class StatsAdapter internal constructor(context: Context) :
     }
 
     internal fun setPairs(pairs: List<MultiplicationPair>){
-        this.pairs = pairs
+        Log.d("pairs",pairs.toString())
+        this.pairs = pairs.sortedBy { -it.numWrong.toFloat() / it.numCorrect.toFloat() }
+        Log.d("pairs",this.pairs.toString())
         notifyDataSetChanged()
     }
 

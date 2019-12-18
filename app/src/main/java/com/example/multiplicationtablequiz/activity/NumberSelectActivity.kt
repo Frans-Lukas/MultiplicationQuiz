@@ -24,6 +24,7 @@ class NumberSelectActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
     private val toggleSettingsDialog = ToggleSettingsFragment()
     private lateinit var questionViewModel: QuestionViewModel
+    private  var allMultPairs : List<MultiplicationPair> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,12 @@ class NumberSelectActivity : AppCompatActivity() {
 
         questionViewModel = ViewModelProvider(this).get(QuestionViewModel::class.java)
 
+        questionViewModel.allMultPairs.observe(this, Observer { pairs -> pairs?.let { setPairs(it) } })
+
+    }
+
+    private fun setPairs(pairs: List<MultiplicationPair>) {
+        allMultPairs = pairs
     }
 
     fun storeArray(): Boolean {
@@ -126,7 +133,15 @@ class NumberSelectActivity : AppCompatActivity() {
     }
 
     fun toggleDifficultNumbers(view: View) {
-
+        for (button in buttons.iterator()){
+            button.isChecked = false
+        }
+        for (i in allMultPairs.indices){
+            if(allMultPairs[i].numCorrect < allMultPairs[i].numWrong){
+                buttons[allMultPairs[i].firstProduct].isChecked = true
+                buttons[allMultPairs[i].secondProduct].isChecked = true
+            }
+        }
 
     }
 }
