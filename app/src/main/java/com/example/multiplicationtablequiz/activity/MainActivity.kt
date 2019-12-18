@@ -63,22 +63,18 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 if (charSequence.length > 0 && Integer.toString(currentExpectedAnswer).length <= charSequence.length) {
-
+                    if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
+                        score++
+                        setScoreText()
+                    } else {
+                        showCorrectAnswer()
+                        wrongAnswers.add(currentQuestionIntegers)
+                    }
                     if (numbersToCalc.size == 0) {
                         resetGame()
-                    } else {
-                        //correct answer
-                        if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
-                            score++
-                            updateQuestionInDB(true)
-                            setScoreText()
-                            changeQuestion()
-                        } else {
-                            updateQuestionInDB(false)
-                            showCorrectAnswer()
-                            changeQuestion()
-                            wrongAnswers.add(currentQuestionIntegers)
-                        }
+                    } else{
+                        updateQuestionInDB(Integer.parseInt(charSequence.toString()) == currentExpectedAnswer)
+                        changeQuestion()
                     }
                 }
             }

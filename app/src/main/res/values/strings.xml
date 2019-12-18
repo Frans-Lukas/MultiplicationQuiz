@@ -4,7 +4,7 @@
     <string name="TVnumberCorrectScore">0/0</string>
     <string name="TVnumberLeftText">Num left: 0</string>
     <string name="maxTitleText">Min</string>
-    <string name="resetGameText">Reset Game</string>
+    <string name="resetGameText">Reset</string>
     <string name="select_numbers">Select Numbers</string>
     <string name="stats">Stats</string>
     <string name="_20x20">20x20</string>
