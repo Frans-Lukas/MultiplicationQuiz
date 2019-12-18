@@ -174,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         } else{
             // 5/?=5
             questionText = (currentQuestionIntegers[0] * currentQuestionIntegers[1]).toString() + "/?" + " = " + (currentQuestionIntegers[1]).toString()
+            currentExpectedAnswer = currentQuestionIntegers[0]
         }
         TVnumberQuestion.text = questionText
     }
