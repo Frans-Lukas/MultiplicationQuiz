@@ -92,14 +92,16 @@ class MainActivity : AppCompatActivity() {
 
     fun updateQuestionInDB(correct: Boolean) {
         fun Boolean.toInt() = if (this) 1 else 0
-        val matchingPairs : List<MultiplicationPair>? = questionViewModel.findByPair(currentQuestionIntegers[0], currentQuestionIntegers[1]).value
-        if (matchingPairs != null && matchingPairs.size == 1) {
-            val numCorrect = matchingPairs.get(0).numCorrect + correct.toInt()
-            var numWrong = matchingPairs.get(0).numWrong
+        val matchingPairs : List<MultiplicationPair> = questionViewModel.findByPair(currentQuestionIntegers[0], currentQuestionIntegers[1])
+        if (matchingPairs.size == 1) {
+            val matchingPair = matchingPairs.get(0)
+            val numCorrect = matchingPair.numCorrect + correct.toInt()
+            var numWrong = matchingPair.numWrong
             if (!correct){
                 numWrong++
             }
-            val pairToUpdateTo = matchingPairs.get(0).copy(numCorrect = numCorrect, numWrong = numWrong)
+            var pairToUpdateTo = matchingPair.copy(numCorrect = numCorrect, numWrong = numWrong)
+            pairToUpdateTo.uid = matchingPair.uid
             questionViewModel.update(pairToUpdateTo)
         } else{
             var numWrong = 0
@@ -110,11 +112,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun showCorrectAnswer() {
         val num = Integer.toString(currentExpectedAnswer)
-        AlertDialog.Builder(this).setTitle("Correct answer is :$num").setMessage("").show()
+        AlertDialog.Builder(this).setTitle("Correct answer is :$num").setNegativeButton("Ok") { dialog, id -> dialog.cancel() }.setMessage("").show()
     }
 
     private fun setQuestionsLeftText() {
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addNewNumbers() {
-        val numberOfNewQuestions = NUMBER_OF_QUESTIONS - wrongAnswers.size
+        val numberOfNewQuestions = NUMBER_OF_QUESTIONS
         numbersToCalc.clear()
         val potentialNumbers = arrayListOf<Int>()
         for (i in 0 until 100){
@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         for (i in 0 until numberOfNewQuestions) {
             numbersToCalc.add(arrayOf(randomizeNextProduct(potentialNumbers), randomizeNextProduct(potentialNumbers)))
         }
-        numbersToCalc.addAll(wrongAnswers)
+        //numbersToCalc.addAll(wrongAnswers)
         wrongAnswers.clear()
     }
 
@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun alertOfFinished() {
         val scoreString = scoreString
-        AlertDialog.Builder(this).setTitle(scoreString).setMessage("").show()
+        AlertDialog.Builder(this).setTitle(scoreString).setMessage("").setPositiveButton("Ok") { dialog, id -> dialog.cancel() }.show()
     }
 
     fun gotoStatsActivity(view: View) {

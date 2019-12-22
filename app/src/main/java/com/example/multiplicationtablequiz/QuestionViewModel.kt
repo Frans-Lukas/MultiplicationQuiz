@@ -25,7 +25,7 @@ class QuestionViewModel(application: Application) : AndroidViewModel(application
         repository.insert(multPair)
     }
 
-    fun findByPair(prod1:Int, prod2:Int) : LiveData<List<MultiplicationPair>> =
+    fun findByPair(prod1:Int, prod2:Int) : List<MultiplicationPair> =
             runBlocking { repository.findByMultPair(prod1, prod2) }
 
     fun update(multPair: MultiplicationPair) =

@@ -15,7 +15,7 @@ class MultiplicationPairRepository (private val multPairDao: MultiplicationPairD
         multPairDao.updateMultiplicationPair(multPair)
     }
 
-    suspend fun findByMultPair(prod1 : Int, prod2 : Int) : LiveData<List<MultiplicationPair>>{
+    suspend fun findByMultPair(prod1 : Int, prod2 : Int) :List<MultiplicationPair>{
         return multPairDao.findByProducts(prod1, prod2)
     }
 

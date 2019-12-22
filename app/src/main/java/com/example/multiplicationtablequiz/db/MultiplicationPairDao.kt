@@ -10,7 +10,7 @@ interface MultiplicationPairDao {
     fun getAll(): LiveData<List<MultiplicationPair>>
 
     @Query ("SELECT * FROM multiplicationpair WHERE firstProduct=:first AND secondProduct=:second")
-    fun findByProducts(first: Int, second: Int): LiveData<List<MultiplicationPair>>
+    suspend fun findByProducts(first: Int, second: Int): List<MultiplicationPair>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg multiplicationPairs: MultiplicationPair)
