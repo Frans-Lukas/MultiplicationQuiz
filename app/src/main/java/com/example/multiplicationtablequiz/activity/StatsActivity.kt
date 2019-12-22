@@ -24,7 +24,7 @@ class StatsActivity : AppCompatActivity() {
         recyclerView.adapter = viewAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
         questionViewModel = ViewModelProvider(this).get(QuestionViewModel::class.java)
-        questionViewModel.allMultPairs.observe(this, Observer { pairs -> pairs?.let { viewAdapter.setPairs(it) } })
+        questionViewModel.worst50MultPairs.observe(this, Observer { pairs -> pairs?.let { viewAdapter.setPairs(it) } })
 
     }
 

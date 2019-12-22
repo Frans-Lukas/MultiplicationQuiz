@@ -6,6 +6,7 @@ import com.example.multiplicationtablequiz.db.MultiplicationPairDao
 
 class MultiplicationPairRepository (private val multPairDao: MultiplicationPairDao){
     val allPairs: LiveData<List<MultiplicationPair>> = multPairDao.getAll()
+    val worstPairs: LiveData<List<MultiplicationPair>> = multPairDao.getTop50WorstPerformance()
 
     suspend fun insert(multPair: MultiplicationPair){
         multPairDao.insert(multPair)

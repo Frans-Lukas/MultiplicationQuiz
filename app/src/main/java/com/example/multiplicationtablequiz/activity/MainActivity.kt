@@ -62,7 +62,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                if (charSequence.length > 0 && Integer.toString(currentExpectedAnswer).length <= charSequence.length) {
+
+                if (charSequence.length > 0 && Integer.toString(currentExpectedAnswer).length <= charSequence.length && isNumber(charSequence)) {
                     if (Integer.parseInt(charSequence.toString()) == currentExpectedAnswer) {
                         score++
                         setScoreText()
@@ -78,6 +79,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            private fun isNumber(charSequence: CharSequence) =
+                    charSequence.toString().toIntOrNull() != null
 
             override fun afterTextChanged(editable: Editable) {
 

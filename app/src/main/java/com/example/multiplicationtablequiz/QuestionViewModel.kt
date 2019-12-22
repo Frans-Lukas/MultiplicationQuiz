@@ -14,11 +14,14 @@ class QuestionViewModel(application: Application) : AndroidViewModel(application
     private val viewModelJob = SupervisorJob()
     private val ioScope = CoroutineScope(Dispatchers.IO + viewModelJob)
     val allMultPairs : LiveData<List<MultiplicationPair>>
+    val worst50MultPairs : LiveData<List<MultiplicationPair>>
 
     init{
         val multPairDao = MultiplicationPairDatabase.getInstance(application, ioScope).multiplicationPairDao()
         repository = MultiplicationPairRepository(multPairDao)
         allMultPairs = repository.allPairs
+        worst50MultPairs = repository.worstPairs
+
     }
 
     fun insert(multPair: MultiplicationPair) = ioScope.launch {

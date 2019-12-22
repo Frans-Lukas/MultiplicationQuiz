@@ -9,8 +9,12 @@ interface MultiplicationPairDao {
     @Query ("SELECT * FROM multiplicationpair")
     fun getAll(): LiveData<List<MultiplicationPair>>
 
+    @Query ("SELECT * FROM multiplicationpair ORDER BY -(numCorrect - numWrong) LIMIT 50")
+    fun getTop50WorstPerformance(): LiveData<List<MultiplicationPair>>
+
     @Query ("SELECT * FROM multiplicationpair WHERE firstProduct=:first AND secondProduct=:second")
     suspend fun findByProducts(first: Int, second: Int): List<MultiplicationPair>
+
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg multiplicationPairs: MultiplicationPair)
